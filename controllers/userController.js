@@ -9,37 +9,40 @@ exports.getAllUsers = async (req, res) => {
   });
 };
 
+exports.getStoreOwner = async (req, res) => {
+  const query = "select userId,name from user where role='store_owner'";
+  db.query(query, (error, result) => {
+    res.send(utils.createResult(error, result));
+  });
+};
 
 exports.updatePassword = (req, res) => {
-  const { newPassword } = req.body;
-  const encryptPass = String(crypto.SHA1(newPassword));
+  const { newPassword,currentPassword } = req.body;
+  const encryptCurrentPass = String(crypto.SHA1(currentPassword));
+  const encryptNewPass = String(crypto.SHA1(newPassword));
   const userId = req.user.id;
-  const query = 'update user set password=? where userId=?';
-  db.query(query, [encryptPass, userId], (error, result) => {
-    res.send(utils.createResult(error, result));
+  const checkQuery='select * from user where userId=? and password=?';
+  const updateQuery = 'update user set password=? where userId=?';
+  db.query(checkQuery, [userId,encryptCurrentPass], (error, result) => {
+    if(error){
+      res.send(utils.createErrorResult(error));
+    }
+    else if(result.length===0){
+      res.send(utils.createErrorResult("Please check current Password"));
+    }else{
+      
+      db.query(updateQuery,[encryptNewPass,userId],(updateErr,updateResult)=>{
+        if(error){
+          res.send(utils.createErrorResult(updateErr));
+        }
+        res.send(utils.createSuccessResult(updateResult));
+      }
+
+      )
+    }
   });
 };
 
-//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-//normal user queries=>
-
-exports.submitRating = (req, res) => {
-  const { storeId, rating } = req.body;
-  const userId = req.user.id;
-  const query = 'Insert into rating (userId, storeId, rating) values (?, ?, ?)';
-  db.query(query, [userId, storeId, rating], (error, result) => {
-    res.send(utils.createResult(error, result));
-  });
-};
-
-exports.updateRating = (req, res) => {
-  const { storeId, rating } = req.body;
-  const userId = req.user.id;
-  const query = 'Update rating Set rating = ? where userId = ? and storeId = ?';
-  db.query(query, [rating, userId, storeId], (error, result) => {
-    res.send(utils.createResult(error, result));
-  });
-};
 
 
 

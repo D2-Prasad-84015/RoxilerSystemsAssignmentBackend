@@ -15,6 +15,9 @@ app.use('/store',storeRoutes);
 const userRoutes=require('./routes/user');
 app.use('/user',userRoutes);
 
+const ratingRoutes=require('./routes/rating');
+app.use('/rating',ratingRoutes);
+
 
 const port=process.env.port||4000;
 app.listen(port,()=>{
