@@ -57,7 +57,6 @@ exports.getRatingByUser = async (req, res) => {
   const query =
     "SELECT ru.userId,ru.name,s.storeId,s.name AS storeName ,r.rating FROM store s JOIN  user u ON s.ownerId = u.userId JOIN rating r ON r.storeId = s.storeId JOIN user ru ON r.userId = ru.userId WHERE s.ownerId= ? and r.rating IS NOT NULL;  ";
   db.query(query, [req.user.id], (error, result) => {
-    console.log(result);
     res.send(utils.createResult(error, result));
   }); 
 };

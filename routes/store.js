@@ -1,5 +1,5 @@
 const express=require('express');
-const { getAllStores, addStore, getRatingByUser } = require('../controllers/storeController');
+const { getAllStores, addStore } = require('../controllers/storeController');
 const verifyToken = require('../middleware/verifyToken');
 const router=express.Router();
 
